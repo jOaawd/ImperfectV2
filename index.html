@@ -18,6 +18,7 @@
             justify-content: flex-start;
             color: #fff;
             overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .loading-screen {
@@ -35,25 +36,14 @@
         }
 
         @keyframes motionBlur {
-            0% {
-                filter: blur(0px);
-            }
-            50% {
-                filter: blur(8px);
-            }
-            100% {
-                filter: blur(0px);
-            }
+            0% { filter: blur(0px); }
+            50% { filter: blur(8px); }
+            100% { filter: blur(0px); }
         }
 
         @keyframes fadeOut {
-            0% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-                visibility: hidden;
-            }
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
         }
 
         .iframe-container {
@@ -141,18 +131,17 @@
         }
 
         .settings-popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             visibility: hidden;
             opacity: 0;
             transition: opacity 0.3s, visibility 0s 0.3s;
+            z-index: 9999;
         }
 
         .settings-popup.active {
@@ -195,10 +184,6 @@
         .popup-content button:hover {
             background-color: #0056b3;
         }
-
-        .background-blur {
-            filter: blur(5px);
-        }
     </style>
 </head>
 <body>
@@ -225,7 +210,7 @@
         </div>
     </div>
 
-    <div id="home" class="iframe-container">
+    <div id="home" class="iframe-container active">
         <iframe src="pgs/index.html" id="home-iframe"></iframe>
     </div>
 
@@ -243,6 +228,7 @@
 
     <div class="settings-popup" id="settingsPopup">
         <div class="popup-content">
+            <img id="popup-image" src="" alt="Background Image">
             <h2 id="popup-title">Title</h2>
             <button onclick="closeSettingsPopup()">Close</button>
         </div>
@@ -256,7 +242,7 @@
             const minutes = now.getMinutes().toString().padStart(2, '0');
             const seconds = now.getSeconds().toString().padStart(2, '0');
             const date = now.toLocaleDateString();
-            timeDateElement.innerHTML = ${hours}:${minutes}:${seconds} | ${date};
+            timeDateElement.innerHTML = `${hours}:${minutes}:${seconds} | ${date}`;
         }
 
         function updateBattery() {
@@ -265,7 +251,7 @@
                 const batteryElement = document.getElementById('battery-percent');
                 const batteryIcon = document.getElementById('battery-icon').querySelector('i');
 
-                batteryElement.innerText = ${batteryPercent}%;
+                batteryElement.innerText = `${batteryPercent}%`;
 
                 if (batteryPercent > 75) {
                     batteryIcon.className = 'fas fa-battery-full';
@@ -303,31 +289,36 @@
             });
         }
 
-    function openSettingsPopup() {
-        fetch('config.json')
-            .then(response => response.json())
-            .then(config => {
-                if (config.title) {
-                    document.getElementById('popup-title').innerText = config.title;
-                }
-                if (config.favicon) {
-                    document.getElementById('favicon').href = config.favicon;
-                }
-                document.getElementById('settingsPopup').classList.add('active');
-            })
-            .catch(error => {
-                console.error('Error loading config:', error);
-            });
-    }
+        function openSettingsPopup() {
+            fetch('config.json')
+                .then(response => response.json())
+                .then(config => {
+                    document.getElementById('popup-title').textContent = config.title || 'Default Title';
+                    document.getElementById('popup-image').src = config.backgroundImage || '';
+                    document.getElementById('favicon').href = config.favicon || 'default-favicon.ico';
+                })
+                .catch(error => {
+                    console.error('Error loading config:', error);
+                    document.getElementById('popup-title').textContent = 'Settings';
+                    document.getElementById('popup-image').src = '';
+                    document.getElementById('favicon').href = 'default-favicon.ico';
+                });
 
+            document.getElementById('settingsPopup').classList.add('active');
+        }
 
         function closeSettingsPopup() {
             document.getElementById('settingsPopup').classList.remove('active');
         }
 
-        preloadIframes();
-        setInterval(updateTimeDate, 1000);
-        updateBattery();
+        window.onload = function() {
+            preloadIframes();
+            updateTimeDate();
+            setInterval(updateTimeDate, 1000);
+            updateBattery();
+            setInterval(updateBattery, 60000);
+        }
     </script>
+
 </body>
 </html>
