@@ -72,6 +72,12 @@
       <span>Games</span>
       <button class="open-btn" onclick="openApp('games')">Open</button>
     </div>
+
+    <div class="app-item">
+      <i class="fas fa-laptop"></i>
+      <span>VM | Vitrual Machine</span>
+      <button class="open-btn" onclick="openApp('vm')">Open</button>
+    </div>
   </div>
 
   <div class="fullscreen-iframe" id="iframeContainer">
@@ -81,10 +87,11 @@
 
   <iframe id="preload-pr0xy" class="preload-iframe" src="https://searcher-zeta.vercel.app/"></iframe>
   <iframe id="preload-games" class="preload-iframe" src="https://joaawd.github.io/Expedition/"></iframe>
+  <iframe id="preload-vm" class="preload-iframe" src="vm"></iframe>
 
   <script>
     let iframesLoaded = 0;
-    const totalIframes = 2;
+    const totalIframes = 3;
 
     function openApp(app) {
       const iframeContainer = document.getElementById('iframeContainer');
