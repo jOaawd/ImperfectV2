@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImperfectV2</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link id="favicon" rel="icon" href="default-favicon.ico"> <!-- Default Favicon -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            animation: fadeOut 2s ease-out forwards, motionBlur 2s infinite;
+        }
+
+        @keyframes motionBlur {
+            0% { filter: blur(0px); }
+            50% { filter: blur(8px); }
+            100% { filter: blur(0px); }
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        .iframe-container {
+            position: relative;
+            flex-grow: 1;
+            display: none;
+            height: 100%;
+            width: 100%;
+        }
+
+        .icon-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-top: 0;
+        }
+
+        .top-icons {
+            display: flex;
+            justify-content: space-around;
+            width: 50%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0);
+            border-radius: 8px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .top-icons i {
+            font-size: 1.2rem;
+            color: #fff;
+            cursor: pointer;
+            transition: color 0.3s;
+            margin: 0 10px;
+        }
+
+        .top-icons i:hover {
+            color: #007bff;
+        }
+
+        .settings-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .settings-icon:hover {
+            color: #28a745;
+        }
+
+        .status-bar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .time-date {
+            margin-right: 15px;
+        }
+
+        .battery-icon {
+            margin-left: 15px;
+        }
+
+        .battery-icon i {
+            font-size: 1.2rem;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .active {
+            display: block !important;
+        }
+
+        .settings-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0s 0.3s;
+        }
+
+        .settings-popup.active {
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        .popup-content {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .popup-content img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .popup-content h2 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .popup-content button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .popup-content button:hover {
+            background-color: #0056b3;
+        }
+
+        .background-blur {
+            filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loading-screen" id="loadingScreen">
+        <h2 style="color: white; font-size: 2rem;">Loading...</h2>
+    </div>
+
+    <div class="icon-container">
+        <div class="top-icons">
+            <i class="fas fa-home" onclick="loadPage('home')"></i>
+            <i class="fas fa-th-large" onclick="loadPage('apps')"></i>
+            <i class="fas fa-desktop" onclick="loadPage('computer')"></i>
+            <i class="fas fa-code" onclick="loadPage('code')"></i>
+        </div>
+        
+        <i class="fas fa-cogs settings-icon" onclick="openSettingsPopup()"></i>
+    </div>
+
+    <div class="status-bar">
+        <div class="time-date" id="time-date"></div>
+        <div class="battery-icon" id="battery-icon">
+            <i class="fas fa-battery-half"></i> <span id="battery-percent">50%</span>
+        </div>
+    </div>
+
+    <div id="home" class="iframe-container">
+        <iframe src="pgs/index.html" id="home-iframe"></iframe>
+    </div>
+
+    <div id="apps" class="iframe-container">
+        <iframe src="pgs/apps.html" id="apps-iframe"></iframe>
+    </div>
+
+    <div id="computer" class="iframe-container">
+        <iframe src="pgs/search.html" id="computer-iframe"></iframe>
+    </div>
+
+    <div id="code" class="iframe-container">
+        <iframe src="pgs/exploits.html" id="code-iframe"></iframe>
+    </div>
+
+    <div class="settings-popup" id="settingsPopup">
+        <div class="popup-content">
+            <img id="popup-image" src="" alt="Background Image">
+            <h2 id="popup-title">Title</h2>
+            <button onclick="closeSettingsPopup()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function updateTimeDate() {
+            const timeDateElement = document.getElementById('time-date');
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const date = now.toLocaleDateString();
+            timeDateElement.innerHTML = `${hours}:${minutes}:${seconds} | ${date}`;
+        }
+
+        function updateBattery() {
+            navigator.getBattery().then(function(battery) {
+                const batteryPercent = Math.floor(battery.level * 100);
+                const batteryElement = document.getElementById('battery-percent');
+                const batteryIcon = document.getElementById('battery-icon').querySelector('i');
+
+                batteryElement.innerText = `${batteryPercent}%`;
+
+                if (batteryPercent > 75) {
+                    batteryIcon.className = 'fas fa-battery-full';
+                } else if (batteryPercent > 50) {
+                    batteryIcon.className = 'fas fa-battery-three-quarters';
+                } else if (batteryPercent > 25) {
+                    batteryIcon.className = 'fas fa-battery-half';
+                } else if (batteryPercent > 10) {
+                    batteryIcon.className = 'fas fa-battery-quarter';
+                } else {
+                    batteryIcon.className = 'fas fa-battery-empty';
+                }
+            });
+        }
+
+        function loadPage(page) {
+            const iframes = document.querySelectorAll('.iframe-container');
+            iframes.forEach(iframe => iframe.classList.remove('active'));
+
+            const selectedIframe = document.getElementById(page);
+            selectedIframe.classList.add('active');
+        }
+
+        function preloadIframes() {
+            const iframes = document.querySelectorAll('iframe');
+            let loadedCount = 0;
+
+            iframes.forEach(iframe => {
+                iframe.onload = function() {
+                    loadedCount++;
+                    if (loadedCount === iframes.length) {
+                        document.getElementById('loadingScreen').style.display = 'none';
+                    }
+                };
+            });
+        }
+
+        function openSettingsPopup() {
+            fetch('config.json')
+                .then(response => response.json())
+                .then(config => {
+                    document.getElementById('popup-title').textContent = config.title;
+                    document.getElementById('popup-image').src = config.backgroundImage;
+
+                    document.getElementById('favicon').href = config.favicon;
+
+                    document.body.classList.add('background-blur');
+                    document.getElementById('settingsPopup').classList.add('active');
+                })
+                .catch(error => {
+                    console.error('Error loading config:', error);
+                });
+        }
+
+        function closeSettingsPopup() {
+            document.body.classList.remove('background-blur');
+            document.getElementById('settingsPopup').classList.remove('active');
+        }
+
+        window.onload = function() {
+            preloadIframes();
+            updateTimeDate();
+            setInterval(updateTimeDate, 1000);
+            updateBattery();
+            setInterval(updateBattery, 60000);
+        }
+    </script>
+
+</body>
+</html>
