@@ -256,7 +256,7 @@
             const minutes = now.getMinutes().toString().padStart(2, '0');
             const seconds = now.getSeconds().toString().padStart(2, '0');
             const date = now.toLocaleDateString();
-            timeDateElement.innerHTML = `${hours}:${minutes}:${seconds} | ${date}`;
+            timeDateElement.innerHTML = ${hours}:${minutes}:${seconds} | ${date};
         }
 
         function updateBattery() {
@@ -265,7 +265,7 @@
                 const batteryElement = document.getElementById('battery-percent');
                 const batteryIcon = document.getElementById('battery-icon').querySelector('i');
 
-                batteryElement.innerText = `${batteryPercent}%`;
+                batteryElement.innerText = ${batteryPercent}%;
 
                 if (batteryPercent > 75) {
                     batteryIcon.className = 'fas fa-battery-full';
@@ -303,17 +303,23 @@
             });
         }
 
-        function openSettingsPopup() {
-            fetch('config.json')
-                .then(response => response.json())
-                .then(config => {
-                    document.getElementById('popup-title').innerText = `Select Theme:`;
-                    document.getElementById('settingsPopup').classList.add('active');
-                })
-                .catch(error => {
-                    console.error('Error loading config:', error);
-                });
-        }
+    function openSettingsPopup() {
+        fetch('config.json')
+            .then(response => response.json())
+            .then(config => {
+                if (config.title) {
+                    document.getElementById('popup-title').innerText = config.title;
+                }
+                if (config.favicon) {
+                    document.getElementById('favicon').href = config.favicon;
+                }
+                document.getElementById('settingsPopup').classList.add('active');
+            })
+            .catch(error => {
+                console.error('Error loading config:', error);
+            });
+    }
+
 
         function closeSettingsPopup() {
             document.getElementById('settingsPopup').classList.remove('active');
