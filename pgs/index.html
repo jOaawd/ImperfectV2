@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      flex-direction: column;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #home {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 20px;
+      color: white;
+      cursor: pointer;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-top: 10px;
+    }
+
+    #greeting {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5rem;
+      margin-top: 10px;
+    }
+
+    #announcement {
+      position: absolute;
+      bottom: 60px;
+      width: 100%;
+      text-align: center;
+      font-size: 1.2rem;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    #announcement p {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="home" onclick="window.location.href='/'">Home</div>
+  <h1>Welcome to Imperfect</h1>
+  <div id="greeting"></div>
+  <div id="announcement"></div>
+
+  <script>
+    localStorage.setItem('username', 'jaycuh');
+    const now = new Date();
+    const hours = now.getHours();
+    let greeting = '';
+    if (hours >= 5 && hours < 12) {
+      greeting = 'Good Morning';
+    } else if (hours >= 12 && hours < 18) {
+      greeting = 'Good Afternoon';
+    } else if (hours >= 18 && hours < 21) {
+      greeting = 'Good Evening';
+    } else {
+      greeting = 'Good Night';
+    }
+
+    window.onload = function() {
+      const username = localStorage.getItem('username');
+      if (username) {
+        document.getElementById('greeting').textContent = `${greeting}, ${username}`;
+      }
+                  // ../api/get-announcement
+      fetch('https://fmode.is-a.dev/api/get-announcement')
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.announcement) {
+            document.getElementById('announcement').innerHTML = `<p>${data.announcement}</p>`;
+          } else {
+            document.getElementById('announcement').innerHTML = '<p>No announcements at the moment.</p>';
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching announcement:', error);
+          document.getElementById('announcement').innerHTML = '<p>Unable to load announcements at the moment.</p>';
+        });
+    };
+  </script>
+</body>
+</html>
