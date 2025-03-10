@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ImperfectV2</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link id="favicon" rel="icon" href="default-favicon.ico">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,7 +18,6 @@
             justify-content: flex-start;
             color: #fff;
             overflow: hidden;
-            transition: all 0.3s ease;
         }
 
         .loading-screen {
@@ -132,16 +131,16 @@
 
         .settings-popup {
             position: absolute;
-            top: 50px;
+            top: 40px;
             right: 10px;
             background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            width: 250px;
             visibility: hidden;
             opacity: 0;
             transition: opacity 0.3s, visibility 0s 0.3s;
-            z-index: 9999;
+            z-index: 999;
         }
 
         .settings-popup.active {
@@ -151,24 +150,22 @@
         }
 
         .popup-content {
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-
-        .popup-content img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            color: #fff;
         }
 
         .popup-content h2 {
-            color: #fff;
             margin-bottom: 10px;
+        }
+
+        .popup-content select {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #333;
+            color: #fff;
         }
 
         .popup-content button {
@@ -228,8 +225,12 @@
 
     <div class="settings-popup" id="settingsPopup">
         <div class="popup-content">
-            <img id="popup-image" src="" alt="Background Image">
-            <h2 id="popup-title">Title</h2>
+            <h2>Select Cloaker</h2>
+            <select id="cloaker-select">
+                <option value="google">Google</option>
+                <option value="classroom">Google Classroom</option>
+            </select>
+            <button onclick="applyCloaker()">Apply</button>
             <button onclick="closeSettingsPopup()">Close</button>
         </div>
     </div>
@@ -290,25 +291,39 @@
         }
 
         function openSettingsPopup() {
-            fetch('config.json')
-                .then(response => response.json())
-                .then(config => {
-                    document.getElementById('popup-title').textContent = config.title || 'Default Title';
-                    document.getElementById('popup-image').src = config.backgroundImage || '';
-                    document.getElementById('favicon').href = config.favicon || 'default-favicon.ico';
-                })
-                .catch(error => {
-                    console.error('Error loading config:', error);
-                    document.getElementById('popup-title').textContent = 'Settings';
-                    document.getElementById('popup-image').src = '';
-                    document.getElementById('favicon').href = 'default-favicon.ico';
-                });
-
             document.getElementById('settingsPopup').classList.add('active');
         }
 
         function closeSettingsPopup() {
             document.getElementById('settingsPopup').classList.remove('active');
+        }
+
+        function applyCloaker() {
+            const cloaker = document.getElementById('cloaker-select').value;
+
+            if (cloaker === 'google') {
+                document.title = 'Google';
+                document.getElementById('favicon').href = 'https://static.wikia.nocookie.net/logopedia/images/c/c4/Google2016Circle.svg/revision/latest/scale-to-width-down/250?cb=20210622165016';
+            } else if (cloaker === 'classroom') {
+                document.title = 'Home';
+                document.getElementById('favicon').href = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStR3gp3oUAFMLiVjj7EnxHK5JBLgOjZqbJrw&s';
+            }
+
+            localStorage.setItem('cloaker', cloaker);
+
+            closeSettingsPopup();
+        }
+
+        function loadCloaker() {
+            const savedCloaker = localStorage.getItem('cloaker');
+
+            if (savedCloaker === 'google') {
+                document.title = 'Google';
+                document.getElementById('favicon').href = 'https://static.wikia.nocookie.net/logopedia/images/c/c4/Google2016Circle.svg/revision/latest/scale-to-width-down/250?cb=20210622165016';
+            } else if (savedCloaker === 'classroom') {
+                document.title = 'Home';
+                document.getElementById('favicon').href = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStR3gp3oUAFMLiVjj7EnxHK5JBLgOjZqbJrw&s';
+            }
         }
 
         window.onload = function() {
@@ -317,6 +332,7 @@
             setInterval(updateTimeDate, 1000);
             updateBattery();
             setInterval(updateBattery, 60000);
+            loadCloaker();
         }
     </script>
 
