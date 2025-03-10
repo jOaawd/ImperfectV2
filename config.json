@@ -1,0 +1,10 @@
+{
+  "google": {
+    "title": "Google",
+    "favicon": "https://www.google.com/favicon.ico",  
+  },
+  "googleDrive": {
+    "title": "Google Drive",
+    "favicon": "https://drive.google.com/favicon.ico",  
+  }
+}
