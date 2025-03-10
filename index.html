@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ImperfectV2</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link id="favicon" rel="icon" href="default-favicon.ico"> <!-- Default Favicon -->
+    <link id="favicon" rel="icon" href="default-favicon.ico">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,14 +35,25 @@
         }
 
         @keyframes motionBlur {
-            0% { filter: blur(0px); }
-            50% { filter: blur(8px); }
-            100% { filter: blur(0px); }
+            0% {
+                filter: blur(0px);
+            }
+            50% {
+                filter: blur(8px);
+            }
+            100% {
+                filter: blur(0px);
+            }
         }
 
         @keyframes fadeOut {
-            0% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; }
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                visibility: hidden;
+            }
         }
 
         .iframe-container {
@@ -232,7 +243,6 @@
 
     <div class="settings-popup" id="settingsPopup">
         <div class="popup-content">
-            <img id="popup-image" src="" alt="Background Image">
             <h2 id="popup-title">Title</h2>
             <button onclick="closeSettingsPopup()">Close</button>
         </div>
@@ -297,12 +307,7 @@
             fetch('config.json')
                 .then(response => response.json())
                 .then(config => {
-                    document.getElementById('popup-title').textContent = config.title;
-                    document.getElementById('popup-image').src = config.backgroundImage;
-
-                    document.getElementById('favicon').href = config.favicon;
-
-                    document.body.classList.add('background-blur');
+                    document.getElementById('popup-title').innerText = `Select Theme:`;
                     document.getElementById('settingsPopup').classList.add('active');
                 })
                 .catch(error => {
@@ -311,18 +316,12 @@
         }
 
         function closeSettingsPopup() {
-            document.body.classList.remove('background-blur');
             document.getElementById('settingsPopup').classList.remove('active');
         }
 
-        window.onload = function() {
-            preloadIframes();
-            updateTimeDate();
-            setInterval(updateTimeDate, 1000);
-            updateBattery();
-            setInterval(updateBattery, 60000);
-        }
+        preloadIframes();
+        setInterval(updateTimeDate, 1000);
+        updateBattery();
     </script>
-
 </body>
 </html>
