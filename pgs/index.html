@@ -64,7 +64,6 @@
   <div id="announcement"></div>
 
   <script>
-    localStorage.setItem('username', 'jaycuh');
     const now = new Date();
     const hours = now.getHours();
     let greeting = '';
@@ -84,7 +83,7 @@
         document.getElementById('greeting').textContent = `${greeting}, ${username}`;
       }
                   // ../api/get-announcement
-      fetch('https://fmode.is-a.dev/api/get-announcement')
+      fetch('../api/get-announcement')
         .then(response => response.json())
         .then(data => {
           if (data && data.announcement) {
